@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>AQI Prediction</title>
+    <link rel="stylesheet" href="static/css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="number"], select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .btn-info {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            display: inline-block;
+            margin: 10px 5px;
+        }
+        .btn-info:hover {
+            background-color: #2980b9;
+        }
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            display: inline-block;
+            margin: 10px 5px;
+        }
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        .btn-compare {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            display: inline-block;
+            margin: 10px 5px;
+        }
+        .btn-compare:hover {
+            background-color: #219954;
+        }
+        .buttons-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .model-info {
+            margin-top: 5px;
+            font-size: 14px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+            justify-content: center;
+        }
+        .checkbox-container input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        .nav-tabs {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .nav-tabs li {
+            margin-right: 5px;
+        }
+        .nav-tabs a {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #7f8c8d;
+            border: 1px solid transparent;
+            border-radius: 4px 4px 0 0;
+            margin-bottom: -1px;
+        }
+        .nav-tabs a.active {
+            color: #2c3e50;
+            border: 1px solid #ddd;
+            border-bottom-color: white;
+            background-color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>AQI PREDICTION</h1>
+        
+        <ul class="nav-tabs">
+            <li><a href="{{ url_for('home') }}" class="active">Predict AQI</a></li>
+            <li><a href="{{ url_for('train_model') }}">Train Model</a></li>
+        </ul>
+        
+        <form action="{{ url_for('predict') }}" method="POST" id="prediction-form">
+            <div class="form-group">
+                <label for="feature_0">Temperature (T) in °C:</label>
+                <input type="number" step="0.1" id="feature_0" name="feature_0" required placeholder="e.g., 25.5" value="25.5">
+            </div>
+            
+            <div class="form-group">
+                <label for="feature_1">Maximum Temperature (TM) in °C:</label>
+                <input type="number" step="0.1" id="feature_1" name="feature_1" required placeholder="e.g., 30.2" value="32.0">
+            </div>
+            
+            <div class="form-group">
+                <label for="feature_2">Minimum Temperature (Tm) in °C:</label>
+                <input type="number" step="0.1" id="feature_2" name="feature_2" required placeholder="e.g., 20.1" value="18.0">
+            </div>
+            
+            <div class="form-group">
+                <label for="feature_3">Sea Level Pressure (SLP) in hPa:</label>
+                <input type="number" step="0.1" id="feature_3" name="feature_3" required placeholder="e.g., 1015.5" value="1010.0">
+            </div>
+            
+            <div class="form-group">
+                <label for="feature_4">Humidity (H) in %:</label>
+                <input type="number" step="0.1" id="feature_4" name="feature_4" required placeholder="e.g., 65" value="65">
+            </div>
+            
+            <div class="form-group">
+                <label for="feature_5">Visibility (VV) in km:</label>
+                <input type="number" step="0.1" id="feature_5" name="feature_5" required placeholder="e.g., 1.5" value="2.0">
+            </div>
+            
+            <div class="form-group">
+                <label for="feature_6">Wind Speed (V) in km/h:</label>
+                <input type="number" step="0.1" id="feature_6" name="feature_6" required placeholder="e.g., 5.0" value="5.0">
+            </div>
+            
+            <div class="form-group">
+                <label for="feature_7">Maximum Wind Speed (VM) in km/h:</label>
+                <input type="number" step="0.1" id="feature_7" name="feature_7" required placeholder="e.g., 10.0" value="12.0">
+            </div>
+            
+            <div class="form-group">
+                <label for="model_select">Select Prediction Model:</label>
+                <select id="model_select" name="model_select">
+                    {% for model in model_options %}
+                    <option value="{{ model.id }}">{{ model.name }}{{ model.description }}</option>
+                    {% endfor %}
+                </select>
+                <div class="model-info">Models are sorted by performance (higher R² is better)</div>
+            </div>
+            
+            <div class="checkbox-container">
+                <input type="checkbox" id="compare_models" name="compare_all" value="true">
+                <label for="compare_models">Compare all models</label>
+            </div>
+            
+            <div class="buttons-container">
+                <input type="submit" class="btn-info" value="Predict AQI">
+                <button type="button" class="btn-secondary" id="sample-data-btn">Use Sample Data</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('sample-data-btn').addEventListener('click', function() {
+            fetch('/sample_data')
+                .then(response => response.json())
+                .then(data => {
+                    // Update form fields with sample data
+                    for (let i = 0; i < 8; i++) {
+                        if (data[i] !== undefined) {
+                            document.getElementById(`feature_${i}`).value = data[i];
+                        }
+                    }
+                })
+                .catch(error => console.error('Error fetching sample data:', error));
+        });
+    </script>
+</body>
+</html>

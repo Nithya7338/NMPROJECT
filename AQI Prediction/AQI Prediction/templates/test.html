@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Navigation</title>
+</head>
+<body>
+    <h1>Test Navigation Links</h1>
+    <ul>
+        <li><a href="{{ url_for('home') }}">Home via url_for</a></li>
+        <li><a href="/">Home via direct URL</a></li>
+        <li><a href="{{ url_for('train_model') }}">Train Model via url_for</a></li>
+        <li><a href="/train_model">Train Model via direct URL</a></li>
+    </ul>
+</body>
+</html> 

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AQI Prediction - Training Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        .result {
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            max-width: 600px;
+        }
+        .metrics {
+            margin: 20px 0;
+            text-align: left;
+        }
+        .metrics table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .metrics th, .metrics td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .metrics th {
+            background-color: #f2f2f2;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #2980b9;
+        }
+        .btn-group {
+            margin-top: 30px;
+        }
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0 5px;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .btn-secondary {
+            background-color: #95a5a6;
+        }
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        .params {
+            text-align: left;
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        .params h3 {
+            margin-bottom: 10px;
+        }
+        .params table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .params th, .params td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        .params th {
+            width: 40%;
+            background-color: #f2f2f2;
+            text-align: right;
+        }
+        .feature-importance {
+            margin-top: 30px;
+            text-align: left;
+        }
+        .progress-bar-container {
+            height: 20px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #3498db;
+            border-radius: 4px;
+        }
+        /* Progress bar width classes */
+        .width-10 { width: 10%; }
+        .width-20 { width: 20%; }
+        .width-30 { width: 30%; }
+        .width-40 { width: 40%; }
+        .width-50 { width: 50%; }
+        .width-60 { width: 60%; }
+        .width-70 { width: 70%; }
+        .width-80 { width: 80%; }
+        .width-90 { width: 90%; }
+        .width-100 { width: 100%; }
+        
+        .feature-name {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>MODEL TRAINING COMPLETE</h1>
+
+        <div class="result">
+            <h2>{{ model_name }}</h2>
+            <p>Your model has been successfully trained and saved.</p>
+            
+            <div class="metrics">
+                <h3>Model Performance Metrics</h3>
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Training Set</th>
+                        <th>Test Set</th>
+                    </tr>
+                    <tr>
+                        <td>R² Score</td>
+                        <td>{{ metrics.train_r2|round(4) }}</td>
+                        <td class="highlight">{{ metrics.test_r2|round(4) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Root Mean Squared Error (RMSE)</td>
+                        <td>{{ metrics.train_rmse|round(2) }}</td>
+                        <td class="highlight">{{ metrics.test_rmse|round(2) }}</td>
+                    </tr>
+                </table>
+            </div>
+            
+            {% if feature_importances %}
+            <div class="feature-importance">
+                <h3>Feature Importance</h3>
+                
+                {% for feature in feature_importances %}
+                <div class="feature-name">
+                    <span>{{ feature.name }}</span>
+                    <span>{{ feature.importance|round(4) }}</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar 
+                        {% if feature.percentage <= 10 %}width-10
+                        {% elif feature.percentage <= 20 %}width-20
+                        {% elif feature.percentage <= 30 %}width-30
+                        {% elif feature.percentage <= 40 %}width-40
+                        {% elif feature.percentage <= 50 %}width-50
+                        {% elif feature.percentage <= 60 %}width-60
+                        {% elif feature.percentage <= 70 %}width-70
+                        {% elif feature.percentage <= 80 %}width-80
+                        {% elif feature.percentage <= 90 %}width-90
+                        {% else %}width-100
+                        {% endif %}"></div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <div class="params">
+                <h3>Model Parameters</h3>
+                <table>
+                    {% for param, value in parameters.items() %}
+                    <tr>
+                        <th>{{ param }}</th>
+                        <td>{{ value }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            
+            <div class="btn-group">
+                <a href="{{ url_for('home') }}" class="btn">Use Model for Prediction</a>
+                <a href="{{ url_for('train_model') }}" class="btn btn-secondary">Train Another Model</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
