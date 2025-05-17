@@ -1,2 +1,0 @@
-# NMPROJECT
-hi im mathimalar 
